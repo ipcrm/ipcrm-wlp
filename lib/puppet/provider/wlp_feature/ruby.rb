@@ -1,4 +1,6 @@
 Puppet::Type.type(:wlp_feature).provide(:ruby) do
+  require 'rexml/document'
+  include REXML
 
   def get_installed_features
     xml_report="#{resource[:base_path]}/features.xml"
@@ -12,11 +14,8 @@ Puppet::Type.type(:wlp_feature).provide(:ruby) do
     end
 
     installed_features = Array.new
-    File.readlines(xml_report).each do |line|
-      if line =~/feature name\=/
-        installed_features.push(line.strip.split('=')[1].delete('">'))
-      end
-    end
+    install_report = REXML::Document.new(File.read(xml_report))
+    REXML::XPath.each( install_report, "//feature") { |f| installed_features.push(f.attributes['name']) }
 
     return nil if installed_features.empty?
     installed_features
