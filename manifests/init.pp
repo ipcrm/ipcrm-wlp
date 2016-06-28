@@ -38,6 +38,17 @@ class wlp (
     require      => File[$base_dir],
   }
 
+  # Create symlinks for server, productInfo
+  file {'/usr/local/bin/server':
+    ensure => link,
+    target => "${base_dir}/wlp/bin/server",
+  }
+
+  file {'/usr/local/bin/productInfo':
+    ensure => link,
+    target => "${base_dir}/wlp/bin/productInfo",
+  }
+
   ## Deploy features, via a define wlp::feature_setup
   # Create Server(s), via a define wlp::server/Manage firewall for each server
 

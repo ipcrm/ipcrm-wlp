@@ -46,11 +46,7 @@ Puppet::Type.type(:wlp_server).provide(:ruby) do
   def state=(value)
     server_command = "#{resource[:base_path]}/bin/server"
 
-    if value == :running
-      arg = 'start'
-    else
-      arg = 'stop'
-    end
+    arg = value == :running ? 'start' : 'stop'
 
     command = [server_command, arg, resource[:name]].flatten
     Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
