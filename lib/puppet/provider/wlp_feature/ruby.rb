@@ -30,29 +30,14 @@ Puppet::Type.type(:wlp_feature).provide(:ruby) do
 
     arguments = Array.new
     arguments.push(resource[:name])
+    arguments.push('--acceptLicense')                   if resource[:accept_license] == :true
+    arguments.push('--to=extension')                    if resource[:install_type] == 'extension'
+    arguments.push("--from=#{resource[:install_from]}") if resource[:install_from]
+    arguments.push("--downloadDependencies=false")      if resource[:download_deps] != :true
+    arguments.push("--verbose")                         if resource[:verbose] == :true
 
-    if resource[:accept_license] == :true
-      arguments.push('--acceptLicense')
-    end
-
-    if resource[:install_type] == 'extension'
-      arguments.push('--to=extension')
-    end
-
-    if resource[:install_from]
-      arguments.push("--from=#{resource[:install_from]}")
-    end
-
-    if resource[:download_deps] != :true
-      arguments.push("--downloadDependencies=false")
-    end
-
-    if resource[:verbose] == :true
-      arguments.push("--verbose")
-    end
-
-    command = arguments.unshift('install').flatten.uniq
-    command = arguments.unshift(installutility).flatten.uniq
+    command = arguments.unshift('install')
+    command = arguments.unshift(installutility).flatten
     Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
   end
 
