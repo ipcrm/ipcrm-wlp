@@ -1,7 +1,18 @@
 Puppet::Type.type(:wlp_feature).provide(:ruby) do
+
+  def get_base_path
+    base_path = '/usr/local/wlp'
+    if File.directory?(base_path)
+      return base_path
+    else
+        raise Puppet::Error, "Cannot find installation path (symlink) #{base_path}"
+    end
+  end
+
   def get_installed_features
+    base_path = get_base_path
     begin
-      feature_command = "#{@resource[:base_path]}/bin/productInfo"
+      feature_command = "#{base_path}/bin/productInfo"
       command = [feature_command, 'featureInfo']
       installed_features = Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
     rescue Puppet::ExecutionFailure => e
@@ -18,7 +29,8 @@ Puppet::Type.type(:wlp_feature).provide(:ruby) do
   end
 
   def create
-    installutility = "#{@resource[:base_path]}/bin/installUtility"
+    base_path = self.class.get_base_path
+    installutility = "#{base_path}/bin/installUtility"
 
     arguments = Array.new
     arguments.push(resource[:name])
@@ -34,7 +46,8 @@ Puppet::Type.type(:wlp_feature).provide(:ruby) do
   end
 
   def destroy
-    installutility = "#{@resource[:base_path]}/bin/installUtility"
+    base_path = self.class.get_base_path
+    installutility = "#{base_path}/bin/installUtility"
 
     arguments = ['uninstall','--verbose','--noPrompts',"#{resource[:name]}"]
     command = arguments.unshift(installutility).flatten.uniq

@@ -1,7 +1,18 @@
 Puppet::Type.type(:wlp_server).provide(:ruby) do
+
+  def get_base_path
+    base_path = '/usr/local/wlp'
+    if File.directory?(base_path)
+      return base_path
+    else
+        raise Puppet::Error, "Cannot find installation path (symlink) #{base_path}"
+    end
+  end
+
   def get_configured_servers
+    base_path = get_base_path
     begin
-      server_command = "#{@resource[:base_path]}/bin/server"
+      server_command = "#{base_path}/bin/server"
       command = [server_command, 'list']
       configured_servers = Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
     rescue Puppet::ExecutionFailure => e
@@ -19,7 +30,8 @@ Puppet::Type.type(:wlp_server).provide(:ruby) do
   end
 
   def create
-    server_command = "#{resource[:base_path]}/bin/server"
+    base_path = self.class.get_base_path
+    server_command = "#{base_path}/bin/server"
 
     arguments = Array.new
     arguments.push(resource[:name])
@@ -32,7 +44,8 @@ Puppet::Type.type(:wlp_server).provide(:ruby) do
   end
 
   def state
-    server_command = "#{resource[:base_path]}/bin/server"
+    base_path = get_base_path
+    server_command = "#{base_path}/bin/server"
     command = [server_command, 'status', resource[:name]].flatten
     output = Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => false)
 
@@ -44,7 +57,8 @@ Puppet::Type.type(:wlp_server).provide(:ruby) do
   end
 
   def state=(value)
-    server_command = "#{resource[:base_path]}/bin/server"
+    base_path = get_base_path
+    server_command = "#{base_path}/bin/server"
 
     arg = value == :running ? 'start' : 'stop'
 
@@ -53,14 +67,15 @@ Puppet::Type.type(:wlp_server).provide(:ruby) do
   end
 
   def destroy
-    server_command = "#{resource[:base_path]}/bin/server"
+    base_path = self.class.get_base_path
+    server_command = "#{base_path}/bin/server"
 
     arguments = ['stop',"#{resource[:name]}"]
     command = arguments.unshift(server_command).flatten.uniq
     Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => false)
 
     begin
-      server_path = "#{resource[:base_path]}/usr/servers/#{resource[:name]}"
+      server_path = "#{base_path}/usr/servers/#{resource[:name]}"
       if File.directory?(server_path)
         FileUtils.remove_entry_secure(server_path)
       else
