@@ -1,14 +1,11 @@
 Puppet::Type.type(:wlp_feature).provide(:ruby) do
-  require 'rexml/document'
-  include REXML
-
   def get_installed_features
     begin
       feature_command = "#{@resource[:base_path]}/bin/productInfo"
       command = [feature_command, 'featureInfo']
       installed_features = Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
     rescue Puppet::ExecutionFailure => e
-      Puppet.debug("get_installed_features failed to generate xml report -> #{e.inspect}")
+      Puppet.debug("get_installed_features failed to generate report -> #{e.inspect}")
       return nil
     end
 
