@@ -23,6 +23,11 @@ Puppet::Type.newtype(:wlp_server) do
     newvalues(:true, :false)
   end
 
+  newproperty(:state) do
+    desc "Set the server state, running or stopped"
+    newvalues(:running, :stopped)
+  end
+
   newparam(:base_path) do
     desc "Installation path for WLP"
     validate do |value|

@@ -31,6 +31,31 @@ Puppet::Type.type(:wlp_server).provide(:ruby) do
     Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
   end
 
+  def state
+    server_command = "#{resource[:base_path]}/bin/server"
+    command = [server_command, 'status', resource[:name]].flatten
+    output = Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => false)
+
+    if output.include?('is running')
+      return 'running'
+    else
+      return 'stopped'
+    end
+  end
+
+  def state=(value)
+    server_command = "#{resource[:base_path]}/bin/server"
+
+    if value == :running
+      arg = 'start'
+    else
+      arg = 'stop'
+    end
+
+    command = [server_command, arg, resource[:name]].flatten
+    Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
+  end
+
   def destroy
     server_command = "#{resource[:base_path]}/bin/server"
 
