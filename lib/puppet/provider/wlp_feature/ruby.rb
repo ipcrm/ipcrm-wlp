@@ -3,19 +3,14 @@ Puppet::Type.type(:wlp_feature).provide(:ruby) do
   include REXML
 
   def get_installed_features
-    xml_report="#{resource[:base_path]}/features.xml"
     begin
-      featuremanager = "#{@resource[:base_path]}/bin/featureManager"
-      command = [featuremanager, 'featureList', xml_report]
-      Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
+      feature_command = "#{@resource[:base_path]}/bin/productInfo"
+      command = [feature_command, 'featureInfo']
+      installed_features = Puppet::Util::Execution.execute(command, :uid => resource[:wlp_user], :combine => true, :failonfail => true)
     rescue Puppet::ExecutionFailure => e
       Puppet.debug("get_installed_features failed to generate xml report -> #{e.inspect}")
       return nil
     end
-
-    installed_features = Array.new
-    install_report = REXML::Document.new(File.read(xml_report))
-    REXML::XPath.each( install_report, "//feature") { |f| installed_features.push(f.attributes['name']) }
 
     return nil if installed_features.empty?
     installed_features
