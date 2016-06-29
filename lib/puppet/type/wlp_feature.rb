@@ -37,7 +37,7 @@ Puppet::Type.newtype(:wlp_feature) do
   newparam(:base_path) do
     desc "Installation path for WLP"
     validate do |value|
-      if value.nil?
+      if value.empty?
         raise ArgumentError, "Base path must be an absolute path: #{value}"
       end
     end
@@ -46,8 +46,15 @@ Puppet::Type.newtype(:wlp_feature) do
   newparam(:wlp_user) do
     desc "user that WLP is installed/running as"
     validate do |value|
-      if value.nil?
-        raise ArgumentError, "WLP user must be provided!"
+      if value.empty?
+      end
+    end
+  end
+
+  validate do
+    [:base_path,:wlp_user].each do |p|
+      if parameters[p].nil?
+        raise ArgumentError, "Parameter #{p} must be provided!"
       end
     end
   end
