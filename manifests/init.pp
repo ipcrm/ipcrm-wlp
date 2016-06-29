@@ -1,5 +1,4 @@
 class wlp (
-  $manage_firewall = $::wlp::params::manage_firewall,
   $manage_user     = $::wlp::params::manage_user,
   $manage_java     = $::wlp::params::manage_java,
   $base_dir        = $::wlp::params::base_dir,
@@ -43,13 +42,4 @@ class wlp (
     ensure => link,
     target => "${base_dir}/wlp",
   }
-
-  ## Deploy features, via a define wlp::feature_setup
-  # Create Server(s), via a define wlp::server/Manage firewall for each server
-
-  # Deploy 'drop-in' apps
-
-  # Deploy 'static' apps
-
-
 }

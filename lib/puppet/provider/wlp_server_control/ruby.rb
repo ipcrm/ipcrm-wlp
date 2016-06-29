@@ -31,9 +31,16 @@ Puppet::Type.type(:wlp_server_control).provide(:ruby) do
     output = Puppet::Util::Execution.execute([ get_base_path, :status, resource[:name]].flatten,
                                              :uid => resource[:wlp_user],
                                              :combine => true,
-                                             :failonfail => false
+                                             :failonfail => false,
                                             )
-    return output.include?('is running') ? :running : :stopped
+    case output.exitstatus
+    when 2
+      raise Puppet::Error, "Server #{resource[:name]} does not exist!"
+    when 1
+      :stopped
+    when 0
+      :running
+    end
   end
 
   def restart
