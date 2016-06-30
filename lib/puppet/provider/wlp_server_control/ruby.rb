@@ -44,11 +44,15 @@ Puppet::Type.type(:wlp_server_control).provide(:ruby) do
   end
 
   def restart
-    if state == :running
-      stop(resource[:name])
-      start(resource[:name])
+    if resource[:ensure] == :running
+      if state == :running
+        stop(resource[:name])
+        start(resource[:name])
+      else
+        start(resource[:name])
+      end
     else
-      start(resource[:name])
+      Puppet.debug("Server #{resource[:name]} not currently running - requested state is #{resource[:ensure]}, skipping refresh")
     end
   end
 
