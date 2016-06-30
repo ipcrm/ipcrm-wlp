@@ -1,8 +1,8 @@
 class wlp (
+  $install_src,
   $manage_user     = $::wlp::params::manage_user,
   $manage_java     = $::wlp::params::manage_java,
   $base_dir        = $::wlp::params::base_dir,
-  $install_src     = $::wlp::params::install_src,
   $wlp_user        = $::wlp::params::wlp_user,
 ) inherits ::wlp::params {
 
