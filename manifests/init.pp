@@ -27,8 +27,9 @@ class wlp (
   }
 
   # Download/Deploy Zip
-  archive { $install_src:
-    path         => $install_src,
+  archive { "${base_dir}/wlp.zip":
+    path         => "${base_dir}/wlp.zip",
+    source       => $install_src,
     extract      => true,
     extract_path => $base_dir,
     creates      => "${base_dir}/wlp",
