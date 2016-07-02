@@ -27,8 +27,9 @@ class wlp (
   }
 
   # Download/Deploy Zip
-  archive { "${base_dir}/wlp.zip":
-    path         => "${base_dir}/wlp.zip",
+  $_archive = basename($install_src)
+  archive { $_archive:
+    path         => "${base_dir}/${_archive}",
     source       => $install_src,
     extract      => true,
     extract_path => $base_dir,
@@ -40,7 +41,18 @@ class wlp (
 
   # Create symlink for install
   file {'/usr/local/wlp':
-    ensure => link,
-    target => "${base_dir}/wlp",
+    ensure  => link,
+    target  => "${base_dir}/wlp",
+    require => Archive[$_archive],
+  }
+
+  # Ensure Bin directory contents is executable (depending on src, not always the case)
+  file { "${base_dir}/wlp/bin":
+    ensure  => directory,
+    owner   => $wlp_user,
+    group   => $wlp_user,
+    recurse => true,
+    mode    => '0750',
+    require => Archive[$_archive],
   }
 }
