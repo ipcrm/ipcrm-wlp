@@ -26,7 +26,7 @@ class wlp (
     mode   => '0755',
   }
 
-  # Download/Deploy Zip
+  # Download/Deploy Archive
   $_archive = basename($install_src)
   archive { $_archive:
     path         => "${base_dir}/${_archive}",
