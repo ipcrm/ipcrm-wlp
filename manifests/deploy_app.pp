@@ -6,6 +6,9 @@ define wlp::deploy_app (
   String $type = Enum['dropin', 'static'],
   String $ensure = 'present',
 ){
+
+  Class[::wlp] -> Wlp::Deploy_app[$title]
+
   case $ensure {
       'present': {
         # Download/Deploy Archive

@@ -6,6 +6,8 @@ define wlp::server (
   Boolean $enable = true,
 ){
 
+  Class[::wlp] -> Wlp::Server[$title]
+
   wlp_server{$title:
     ensure    => $ensure,
     base_path => $base_path,

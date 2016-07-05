@@ -1,12 +1,11 @@
 Puppet::Type.type(:wlp_server_control).provide(:ruby) do
 
   def get_base_path
-    base_path = '/usr/local/wlp'
-    server_command = "#{base_path}/bin/server"
-    if File.directory?(base_path)
+    server_command = "#{resource[:base_path]}/bin/server"
+    if File.exists?(server_command)
       server_command
     else
-        raise Puppet::Error, "Cannot find installation path (symlink) #{base_path}"
+        raise Puppet::Error, "Cannot find server command at path #{server_command}"
     end
 
   end

@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe 'wlp::server', :type => :define do
+  let(:pre_condition) { 'class {"::wlp": install_src => "/tmp/wlp-javaee7-16.0.0.2.zip"}' }
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do

@@ -2,7 +2,7 @@ class wlp (
   $install_src,
   $manage_user     = $::wlp::params::manage_user,
   $manage_java     = $::wlp::params::manage_java,
-  $base_dir        = $::wlp::params::base_dir,
+  $base_path        = $::wlp::params::base_path,
   $wlp_user        = $::wlp::params::wlp_user,
 ) inherits ::wlp::params {
 
@@ -13,13 +13,13 @@ class wlp (
   if $manage_user == true {
     user{$wlp_user:
       comment    => 'Websphere Liberty Profile User',
-      home       => $base_dir,
+      home       => $base_path,
       managehome => false,
     }
   }
 
   # Create Install Dir
-  file{$base_dir:
+  file{$base_path:
     ensure => directory,
     owner  => $wlp_user,
     group  => $wlp_user,
@@ -29,23 +29,22 @@ class wlp (
   # Download/Deploy Archive
   $_archive = basename($install_src)
   archive { $_archive:
-    path         => "${base_dir}/${_archive}",
+    path         => "${base_path}/${_archive}",
     source       => $install_src,
     extract      => true,
-    extract_path => $base_dir,
-    creates      => "${base_dir}/wlp",
+    extract_path => $base_path,
+    creates      => "${base_path}/wlp",
     user         => $wlp_user,
     group        => $wlp_user,
-    require      => File[$base_dir],
+    require      => File[$base_path],
+    notify       => Exec["fix perms on ${base_path}/wlp/bin"],
   }
 
   # Ensure Bin directory contents is executable (depending on src, not always the case)
-  file { "${base_dir}/wlp/bin":
-    ensure  => directory,
-    owner   => $wlp_user,
-    group   => $wlp_user,
-    recurse => true,
-    mode    => '0750',
-    require => Archive[$_archive],
+  exec { "fix perms on ${base_path}/wlp/bin":
+    refreshonly => true,
+    command     => "find ${base_path}/wlp/bin -type f ! -name *.jar -exec chmod 0750 {} \\;",
+    path        => $::path,
   }
+
 }

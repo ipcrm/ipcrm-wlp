@@ -1,7 +1,12 @@
 require 'spec_helper'
 
 describe 'wlp::deploy_app', :type => :define do
- let(:pre_condition){ '::wlp::server{"testserver": user => "wlp", base_path => "/opt/ibm/wlp" }' }
+ let(:pre_condition){
+   '
+    wlp::server{"testserver": ensure => "present", base_path => "/opt/ibm/wlp", user => "wlp"  };
+    class {"wlp": install_src => "https://public.dhe.ibm.com/downloads/wlp/16.0.0.2/wlp-javaee7-16.0.0.2.zip" }
+   '
+ }
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
