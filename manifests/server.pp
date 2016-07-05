@@ -4,6 +4,7 @@ define wlp::server (
   String  $user          = $::wlp::wlp_user,
   String  $base_path     = $::wlp::base_path,
   String  $server_config = '',
+  String  $server_env    = '',
 ){
 
   Class[::wlp] -> Wlp::Server[$title]
@@ -21,6 +22,19 @@ define wlp::server (
     file{$server_config_file:
       ensure  => $ensure,
       content => $server_config,
+      owner   => $user,
+      group   => $user,
+      require => Wlp_server[$title],
+      before  => Wlp_server_control[$title],
+      notify  => Wlp_server_control[$title],
+    }
+  }
+
+  $server_env_file = "${install_path}/usr/servers/${title}/server.env"
+  if $server_env != '' {
+    file{$server_env_file:
+      ensure  => $ensure,
+      content => $server_env,
       owner   => $user,
       group   => $user,
       require => Wlp_server[$title],
