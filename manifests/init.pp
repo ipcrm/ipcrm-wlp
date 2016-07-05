@@ -39,13 +39,6 @@ class wlp (
     require      => File[$base_dir],
   }
 
-  # Create symlink for install
-  file {'/usr/local/wlp':
-    ensure  => link,
-    target  => "${base_dir}/wlp",
-    require => Archive[$_archive],
-  }
-
   # Ensure Bin directory contents is executable (depending on src, not always the case)
   file { "${base_dir}/wlp/bin":
     ensure  => directory,
