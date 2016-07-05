@@ -5,9 +5,11 @@ define wlp::feature (
 ){
   Class[::wlp] -> Wlp::Feature[$title]
 
+  $install_path = "${base_path}/wlp"
+
   wlp_feature {$title:
       ensure    => $ensure,
-      base_path => $base_path,
+      base_path => $install_path,
       wlp_user  => $user,
   }
 }
