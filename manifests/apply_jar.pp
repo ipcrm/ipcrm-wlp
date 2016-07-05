@@ -1,9 +1,9 @@
 define wlp::apply_jar (
-  String $user,
-  String $base_path,
   String $creates,
   String $install_src = $name,
-  String $java_cmd = 'java',
+  String $user        = $::wlp::wlp_user,
+  String $base_path   = $::wlp::base_path,
+  String $java_cmd    = 'java',
 ){
 
   # Download/Deploy Archive

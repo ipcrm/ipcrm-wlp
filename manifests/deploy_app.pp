@@ -1,13 +1,15 @@
 define wlp::deploy_app (
-  String $user,
-  String $base_path,
   String $server,
   String $install_src,
-  String $type = Enum['dropin', 'static'],
-  String $ensure = 'present',
+  String $ensure    = 'present',
+  String $user      = $::wlp::wlp_user,
+  String $base_path = $::wlp::base_path,
+  String $type      = Enum['dropin', 'static'],
 ){
 
   Class[::wlp] -> Wlp::Deploy_app[$title]
+
+  $install_path = "${base_path}/wlp"
 
   case $ensure {
       'present': {
@@ -26,7 +28,7 @@ define wlp::deploy_app (
         case $type {
           'static': {
             archive { $_archive:
-              path   => "${base_path}/usr/servers/${server}/${_app_path}/${_archive}",
+              path   => "${install_path}/usr/servers/${server}/${_app_path}/${_archive}",
               source => $install_src,
               user   => $user,
               group  => $user,
@@ -35,7 +37,7 @@ define wlp::deploy_app (
           }
           'dropin' : {
             archive { $_archive:
-              path   => "${base_path}/usr/servers/${server}/${_app_path}/${_archive}",
+              path   => "${install_path}/usr/servers/${server}/${_app_path}/${_archive}",
               source => $install_src,
               user   => $user,
               group  => $user,
@@ -50,13 +52,13 @@ define wlp::deploy_app (
         $_app_path = $type ? {'dropin' => 'dropins', 'static' => 'apps' }
         case $type {
           'static': {
-            file{"${base_path}/usr/servers/${server}/${_app_path}/${title}":
+            file{"${install_path}/usr/servers/${server}/${_app_path}/${title}":
               ensure => absent,
               notify => Wlp_server_control[$server],
             }
           }
           'dropin' : {
-            file{"${base_path}/usr/servers/${server}/${_app_path}/${title}":
+            file{"${install_path}/usr/servers/${server}/${_app_path}/${title}":
               ensure  => absent,
             }
           }

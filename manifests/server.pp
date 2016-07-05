@@ -1,20 +1,22 @@
 define wlp::server (
-  String  $user,
-  String  $base_path,
+  String  $ensure        = 'present',
+  Boolean $enable        = true,
+  String  $user          = $::wlp::wlp_user,
+  String  $base_path     = $::wlp::base_path,
   String  $server_config = '',
-  String  $ensure = 'present',
-  Boolean $enable = true,
 ){
 
   Class[::wlp] -> Wlp::Server[$title]
 
+  $install_path = "${base_path}/wlp"
+
   wlp_server{$title:
     ensure    => $ensure,
-    base_path => $base_path,
+    base_path => $install_path,
     wlp_user  => $user,
   }
 
-  $server_config_file = "${base_path}/usr/servers/${title}/server.xml"
+  $server_config_file = "${install_path}/usr/servers/${title}/server.xml"
   if $server_config != '' {
     file{$server_config_file:
       ensure  => $ensure,
@@ -32,7 +34,7 @@ define wlp::server (
   if $ensure == 'present' {
     wlp_server_control {$title:
       ensure    => $_state,
-      base_path => $base_path,
+      base_path => $install_path,
       wlp_user  => $user,
     }
   }

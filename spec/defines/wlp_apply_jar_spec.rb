@@ -13,7 +13,7 @@ describe 'wlp::apply_jar', :type => :define do
         end
 
         context "wlp::apply_jar class with user and base dir set" do
-          let(:params) { { :user => 'wlp', :base_path => '/opt/ibm', :creates => 'lib/features/wss4j-1.0.mf' } }
+          let(:params) { { :creates => 'lib/features/wss4j-1.0.mf' } }
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_archive('wlp-extended-16.0.0.2.jar').with({
             :path   => '/opt/ibm/wlp/wlp-extended-16.0.0.2.jar',
